@@ -35,7 +35,7 @@ public class SendEmail
 			}
 		});
 		
-		String filename = "attachment.txt"; // TODO: pass in filename from folder monitor code
+		String filename = "meeting_saved_chat.txt"; // TODO: pass in filename from folder monitor code
 		
 		for (int i = 0; i < recipients.size(); i++) {
 			Message message = prepareMessage(session, emailAcct, recipients.get(i), filename);
@@ -43,9 +43,9 @@ public class SendEmail
 			try {
 				// send email
 				Transport.send(message);
-				System.out.println("Quick Summary successfully sent to " + recipients.get(i));
+				System.out.println("Quick summary successfully sent to " + recipients.get(i));
 			} catch (MessagingException e) {
-				// TODO Auto-generated catch block
+				System.out.println("Quick summary failed to send for " + recipients.get(i));
 				e.printStackTrace();
 			}
 		}
