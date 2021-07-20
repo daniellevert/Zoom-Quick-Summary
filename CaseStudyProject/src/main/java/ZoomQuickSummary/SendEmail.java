@@ -8,10 +8,14 @@ import javax.activation.*;
   
 public class SendEmail 
 {
+	
+	SendEmail() {
+		System.out.println("Constructor called");
+	}
 	/*
 	 * Initializes email sending process
 	 */
-	public static void main(String [] args) 
+	public void sendEmail(String filePath) 
 	{    
 		ArrayList<String> recipients = createRecipientsList();
 		
@@ -35,10 +39,10 @@ public class SendEmail
 			}
 		});
 		
-		String filename = "meeting_saved_chat.txt"; // TODO: pass in filename from folder monitor code
+//		String filename = "meeting_saved_chat.txt"; // TODO: pass in filename from folder monitor code
 		
 		for (int i = 0; i < recipients.size(); i++) {
-			Message message = prepareMessage(session, emailAcct, recipients.get(i), filename);
+			Message message = prepareMessage(session, emailAcct, recipients.get(i), filePath);
 			
 			try {
 				// send email
