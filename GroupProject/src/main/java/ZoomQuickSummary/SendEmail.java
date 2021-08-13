@@ -1,24 +1,30 @@
 package ZoomQuickSummary;
 
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.*;
 import javax.mail.*;
 import javax.mail.internet.*;
-import javax.activation.*;
   
   
 public class SendEmail 
 {
 	
-	SendEmail() {
-		System.out.println("Constructor called");
-	}
+	private static String username = System.getProperty("user.name");
 	/*
 	 * Initializes email sending process
 	 */
 	public void sendEmail(String filePath) 
 	{    
-		ArrayList<String> recipients = createRecipientsList();
+		String recipient = null;
+		try {
+			recipient = getHostEmail();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
 		
 		// account and password strings
 		final String emailAcct = "zoomquicksummary@gmail.com";
@@ -40,19 +46,15 @@ public class SendEmail
 			}
 		});
 		
-//		String filename = "meeting_saved_chat.txt"; // TODO: pass in filename from folder monitor code
+		Message message = prepareMessage(session, emailAcct, recipient, filePath);
 		
-		for (int i = 0; i < recipients.size(); i++) {
-			Message message = prepareMessage(session, emailAcct, recipients.get(i), filePath);
-			
-			try {
-				// send email
-				Transport.send(message);
-				System.out.println("Quick summary successfully sent to " + recipients.get(i));
-			} catch (MessagingException e) {
-				System.out.println("Quick summary failed to send for " + recipients.get(i));
-				e.printStackTrace();
-			}
+		try {
+			// send email
+			Transport.send(message);
+			System.out.println("Quick summary successfully sent to " + recipient);
+		} catch (MessagingException e) {
+			System.out.println("Quick summary failed to send for " + recipient);
+			e.printStackTrace();
 		}
 	}
 	
@@ -61,28 +63,13 @@ public class SendEmail
 	 * Can be used in modified form in the final, automated version, e.g.
 	 * validate email addresses received from Zoom and add them to list.
 	 */
-	private static ArrayList<String> createRecipientsList() {
-		System.out.println("Enter quick summary email recipients. Enter 'd' when done: ");
-		Scanner scanner = new Scanner(System.in);
-		String input = scanner.nextLine();
-		
-		ArrayList<String> recipients = new ArrayList<String>();
-		recipients.add("daniel.levert@morningstar.com");
-		
-		while (!input.equals("d")) {
-			if (input.contains("@") && input.contains(".")) {
-				recipients.add(input.toString());
-				input = scanner.nextLine();
-			}
-			else {
-				System.out.println("Invalid email address entered. Try again.");
-				input = scanner.nextLine();
-			}
-		}
-		
-		scanner.close();
-		
-		return recipients;
+	private static String getHostEmail() throws IOException {
+		File file = new File("/Users/"+ username +"/email.txt");
+		BufferedReader br = new BufferedReader(new FileReader(file));
+  
+		String host = null;
+		host = br.readLine();
+		return host;
 	}
 	
 	/*
@@ -95,27 +82,34 @@ public class SendEmail
 			
 			message.setFrom(new InternetAddress(emailAcct));
 			
-			// TODO: decide if we should change RecipientType to .CC or .BCC
+			// Can also change RecipientType to .CC or .BCC
 			message.setRecipient(Message.RecipientType.TO, new InternetAddress(recipient));
 			
 			message.setSubject("Zoom Quick Summary");
 			
 			/* 
-			 * Setting text and attachment content for the email 
+			 * Setting html document content for the email 
 			 */
-			BodyPart textBodyPart = new MimeBodyPart();
-			textBodyPart.setText("Dear " + recipient + ",\n\nAttached is the chat history from your recent Zoom meeting, brought to you by some really cool Morningstar interns.\n\nEnjoy!\nZoom Quick Summary Team\n");
 			
-			// TODO: where Zoom chat history filename with path will be attached
-			BodyPart attachmentBodyPart = new MimeBodyPart(); 
-			DataSource source = new FileDataSource(filename);  
-			attachmentBodyPart.setDataHandler(new DataHandler(source));  
-			attachmentBodyPart.setFileName(filename);  
+			// converts html document as a string
+			StringBuilder contentBuilder = new StringBuilder();
+			try {
+			    BufferedReader in = new BufferedReader(new FileReader(filename));
+			    String str;
+			    while ((str = in.readLine()) != null) {
+			        contentBuilder.append(str);
+			    }
+			    in.close();
+			} catch (IOException e) {
+			}
+			String content = contentBuilder.toString();
+			
+			BodyPart htmlBodyPart = new MimeBodyPart();
+			htmlBodyPart.setContent(content, "text/html");  
 			  
 			// puts text and attachment parts of the email together
 			Multipart multipartObject = new MimeMultipart();  
-			multipartObject.addBodyPart(textBodyPart);  
-			multipartObject.addBodyPart(attachmentBodyPart);
+			multipartObject.addBodyPart(htmlBodyPart);  
 			
 			message.setContent(multipartObject);
 			
