@@ -28,7 +28,7 @@ public class SendEmail
 		
 		// account and password strings
 		final String emailAcct = "zoomquicksummary@gmail.com";
-		final String emailPass = "mopvej-0tiFbi-negpaw"; // DON'T LET ANYONE SEE THIS
+		final String emailPass = ""; // REMOVED PASSWORD FOR SECURITY
 		
 		Properties properties = new Properties();
 		
