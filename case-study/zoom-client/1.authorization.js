@@ -5,7 +5,7 @@ const { chromium } = require('playwright-chromium')
  * @param {import('playwright-chromium').BrowserType<import('playwright').Browser>} engine
  */
 async function run(engine, callback) {
-  const clientId = "nJd15hLCQj2o3ynXszpsDw"
+  const clientId = "" // client ID removed
 
   const browser = await engine.launch({
     args: ['--disable-dev-shm-usage'],
