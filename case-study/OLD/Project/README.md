@@ -1,4 +1,0 @@
-ZoomQuickSummary
-===============
-
-Case Study Project
