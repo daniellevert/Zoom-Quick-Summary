@@ -2,8 +2,8 @@ const axios = require('axios').default
 const base64 = require('base-64')
 
 async function generateAccessToken(authorizationCode) {
-  const clientId = "nJd15hLCQj2o3ynXszpsDw"
-  const clientSecret = "lwVNrTQPxcffVsJkjWE6r4SuMsKhLve1"
+  const clientId = "" //client ID removed
+  const clientSecret = "" // client secret removed
 
   const authorization = `Basic ${base64.encode(`${clientId}:${clientSecret}`)}`
   const result = await axios.post('https://zoom.us/oauth/token', null, {
